@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "sprint-mcp",
+      "version": "0.1.0",
+      "title": "Sprint — College Events"
+    },
+    "tools": [
+      {
+        "name": "list_events",
+        "title": "List events",
+        "description": "List college events on Sprint. Optionally filter by category, city, or free-text query against title and description.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "category": {
+              "description": "Category key such as sports, hackathon, cultural, symposium, workshop.",
+              "type": "string"
+            },
+            "city": {
+              "description": "Case-insensitive city filter (e.g. Chennai).",
+              "type": "string"
+            },
+            "query": {
+              "description": "Free-text search over title and description.",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Max results (default 20).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_event",
+        "title": "Get event",
+        "description": "Get the full details of a Sprint event by its ID.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Event ID, e.g. 'e1'."
+            }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_colleges",
+        "title": "List colleges",
+        "description": "List colleges on Sprint. Optionally filter by city or district (case-insensitive).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "city": {
+              "description": "Filter by city, e.g. Chennai.",
+              "type": "string"
+            },
+            "district": {
+              "description": "Filter by district.",
+              "type": "string"
+            },
+            "query": {
+              "description": "Free-text search over college name.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
