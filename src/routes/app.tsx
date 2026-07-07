@@ -30,7 +30,13 @@ function AppShell() {
     if (ready && !user) navigate({ to: "/login" });
   }, [ready, user, navigate]);
 
-  if (!ready) return <div className="min-h-screen bg-background" />;
+  if (!ready) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+      </div>
+    );
+  }
   if (!user) return null;
 
   return (
