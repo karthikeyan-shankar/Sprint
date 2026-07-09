@@ -17,7 +17,7 @@ import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { RegistrantDrawer } from "@/components/host/RegistrantDrawer";
 
-type Tab = "overview" | "registrations" | "comms" | "checkin" | "export";
+type Tab = "overview" | "registrations" | "export";
 
 export const Route = createFileRoute("/app/events/$id")({
   component: ManageEvent,
@@ -27,8 +27,6 @@ export const Route = createFileRoute("/app/events/$id")({
 const TABS: { key: Tab; label: string; icon: any }[] = [
   { key: "overview", label: "Overview", icon: TrendingUp },
   { key: "registrations", label: "Registrations", icon: Users },
-  { key: "comms", label: "Communications", icon: Megaphone },
-  { key: "checkin", label: "Check-in", icon: BadgeCheck },
   { key: "export", label: "Export", icon: Download },
 ];
 
@@ -115,8 +113,6 @@ function ManageEvent() {
 
       {tab === "overview" && <OverviewTab event={e} regs={regs} pending={pending.length} approved={approved.length} rejected={rejected.length} paid={paid.length} revenue={revenue} onOpen={setOpenReg} onJump={setTab} />}
       {tab === "registrations" && <RegistrationsTab event={e} regs={regs} setRegs={setRegs} onOpen={setOpenReg} />}
-      {tab === "comms" && <CommsTab event={e} regs={regs} />}
-      {tab === "checkin" && <CheckInTab regs={regs} onChange={updateReg} onOpen={setOpenReg} />}
       {tab === "export" && <ExportTab event={e} regs={regs} />}
 
       <RegistrantDrawer reg={openReg} event={e} onClose={() => setOpenReg(null)} onChange={updateReg} />
@@ -133,73 +129,40 @@ function OverviewTab({
   onOpen: (r: RegistrationDoc) => void; onJump: (t: Tab) => void;
 }) {
   const fillPct = e.maxParticipants ? Math.min(100, Math.round((regs.length / e.maxParticipants) * 100)) : 0;
-  const recent = regs.slice(0, 5);
+  
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
-      <div className="space-y-6 lg:col-span-2">
-        <AppPanel title="At a glance">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Stat label="Registered" value={regs.length} tone="text-foreground" />
-            <Stat label="Seats" value={`${regs.length}/${e.maxParticipants || "∞"}`} tone="text-foreground" />
-          </div>
-          {e.maxParticipants > 0 && (
-            <div className="mt-4">
-              <div className="mb-1.5 flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                <span>Fill rate</span><span>{fillPct}%</span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-surface-2">
-                <div className="h-full bg-neon transition-all" style={{ width: `${fillPct}%` }} />
-              </div>
+    <div className="grid gap-6 sm:grid-cols-2">
+      <AppPanel title="At a glance">
+        <div className="grid grid-cols-2 gap-3">
+          <Stat label="Registered" value={regs.length} tone="text-foreground" />
+          <Stat label="Seats" value={`${regs.length}/${e.maxParticipants || "∞"}`} tone="text-foreground" />
+        </div>
+        {e.maxParticipants > 0 && (
+          <div className="mt-4">
+            <div className="mb-1.5 flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              <span>Fill rate</span><span>{fillPct}%</span>
             </div>
-          )}
-        </AppPanel>
-
-        <AppPanel title="Recent registrations">
-          {recent.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-              No one has registered yet — share your event link to get started.
+            <div className="h-2 overflow-hidden rounded-full bg-surface-2">
+              <div className="h-full bg-neon transition-all" style={{ width: `${fillPct}%` }} />
             </div>
-          ) : (
-            <ul className="divide-y divide-border/50">
-              {recent.map((r) => (
-                <li key={r.id} className="flex items-center justify-between py-3">
-                  <button onClick={() => onOpen(r)} className="min-w-0 text-left">
-                    <div className="truncate text-sm font-semibold">{r.name}</div>
-                    <div className="truncate text-xs text-muted-foreground">{r.collegeName || r.email}</div>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          <button onClick={() => onJump("registrations")} className="mt-4 text-xs font-bold uppercase tracking-widest text-neon hover:underline">View all →</button>
-        </AppPanel>
-      </div>
-
-      <div className="space-y-6">
-        <AppPanel title="Share your event">
-          {e.poster ? (
-            <img src={e.poster} alt={e.title} className="mb-3 h-24 w-full rounded-2xl object-cover" />
-          ) : <div className="mb-3 h-24 w-full rounded-2xl bg-surface-2" />}
-          <Link to="/events/$id" params={{ id: e.id }} className="inline-flex w-full items-center justify-center rounded-full border border-border bg-surface-2 py-2 text-xs font-bold uppercase hover:bg-surface">View public page</Link>
-          <button
-            onClick={() => {
-              const url = `${window.location.origin}/events/${e.id}`;
-              navigator.clipboard.writeText(url);
-              toast.success("Link copied");
-            }}
-            className="mt-2 inline-flex w-full items-center justify-center rounded-full bg-neon py-2 text-xs font-bold uppercase text-neon-foreground"
-          >Copy registration link</button>
-        </AppPanel>
-
-        <AppPanel title="Quick jumps">
-          <div className="flex flex-col gap-2 text-xs font-bold uppercase tracking-widest">
-            <button onClick={() => onJump("registrations")} className="rounded-full border border-border bg-surface-2 py-2 hover:bg-surface">View registrations</button>
-            <button onClick={() => onJump("comms")} className="rounded-full border border-border bg-surface-2 py-2 hover:bg-surface">Send announcement</button>
-            <button onClick={() => onJump("checkin")} className="rounded-full border border-border bg-surface-2 py-2 hover:bg-surface">Check-in mode</button>
-            <button onClick={() => onJump("export")} className="rounded-full border border-border bg-surface-2 py-2 hover:bg-surface">Export data</button>
           </div>
-        </AppPanel>
-      </div>
+        )}
+      </AppPanel>
+
+      <AppPanel title="Share your event">
+        {e.poster ? (
+          <img src={e.poster} alt={e.title} className="mb-3 h-24 w-full rounded-2xl object-cover" />
+        ) : <div className="mb-3 h-24 w-full rounded-2xl bg-surface-2" />}
+        <Link to="/events/$id" params={{ id: e.id }} className="inline-flex w-full items-center justify-center rounded-full border border-border bg-surface-2 py-2 text-xs font-bold uppercase hover:bg-surface">View public page</Link>
+        <button
+          onClick={() => {
+            const url = `${window.location.origin}/events/${e.id}`;
+            navigator.clipboard.writeText(url);
+            toast.success("Link copied");
+          }}
+          className="mt-2 inline-flex w-full items-center justify-center rounded-full bg-neon py-2 text-xs font-bold uppercase text-neon-foreground"
+        >Copy registration link</button>
+      </AppPanel>
     </div>
   );
 }
@@ -310,158 +273,7 @@ function FilterChips({ label, value, onChange, options }: { label: string; value
   );
 }
 
-/* ---------------- Communications ---------------- */
 
-function CommsTab({ event, regs }: { event: EventDoc; regs: RegistrationDoc[] }) {
-  const [tplId, setTplId] = useState(TEMPLATES[0].id);
-  const [subject, setSubject] = useState("");
-  const [body, setBody] = useState("");
-
-  const tpl = TEMPLATES.find((t) => t.id === tplId)!;
-  const useTpl = () => {
-    // Fill using first reg as sample; final send fills per-recipient.
-    const sample = regs[0];
-    setSubject(sample ? fillTemplate(tpl.subject, sample, event) : tpl.subject);
-    setBody(sample ? fillTemplate(tpl.body, sample, event) : tpl.body);
-  };
-
-  const recipients = regs;
-
-  const emailAll = () => {
-    if (!recipients.length) { toast.error("No recipients"); return; }
-    const emails = recipients.map(r => r.email).filter(Boolean);
-    window.location.href = batchMailto(emails, subject || tpl.subject, body || tpl.body);
-  };
-
-  const openWhatsApp = (r: RegistrationDoc) => {
-    const msg = fillTemplate(body || tpl.body, r, event);
-    window.open(whatsappLink(r.phone, msg), "_blank");
-  };
-
-  return (
-    <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-      <AppPanel title="Compose">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          <select value={tplId} onChange={(e) => setTplId(e.target.value)} className="rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm">
-            {TEMPLATES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
-          </select>
-          <button onClick={useTpl} className="rounded-full bg-neon/20 px-3 py-1.5 text-[11px] font-bold uppercase text-neon hover:bg-neon/30">Use template</button>
-          <span className="text-[10px] text-muted-foreground">Variables: {"{name} {event} {date} {venue} {fee} {host}"}</span>
-        </div>
-
-        <label className="block mb-3">
-          <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Subject (email)</div>
-          <input value={subject} onChange={(e) => setSubject(e.target.value)} className="w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm outline-none focus:border-neon" placeholder="Subject line" />
-        </label>
-        <label className="block">
-          <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Message</div>
-          <textarea rows={8} value={body} onChange={(e) => setBody(e.target.value)} className="w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm outline-none focus:border-neon" placeholder="Type your announcement…" />
-        </label>
-
-        <div className="mt-4 flex flex-wrap gap-3">
-          <button onClick={emailAll} className="inline-flex items-center gap-2 rounded-full bg-neon px-5 py-2.5 text-xs font-bold uppercase text-neon-foreground">
-            <Mail className="h-4 w-4" /> Email {recipients.length} recipient{recipients.length === 1 ? "" : "s"}
-          </button>
-          <button
-            onClick={() => { toast.success("Announcement noted"); }}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-2 px-5 py-2.5 text-xs font-bold uppercase hover:bg-surface"
-          >
-            <Send className="h-4 w-4" /> Save as announcement
-          </button>
-        </div>
-      </AppPanel>
-
-      <AppPanel title={`WhatsApp — ${recipients.length}`}>
-        <p className="mb-3 text-xs text-muted-foreground">Open each chat in a click. Message is auto-filled per person using the template above.</p>
-        {recipients.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border p-6 text-center text-xs text-muted-foreground">No recipients match this audience.</div>
-        ) : (
-          <ul className="max-h-[440px] space-y-1 overflow-auto pr-1">
-            {recipients.map((r) => (
-              <li key={r.id} className="flex items-center justify-between rounded-xl bg-surface-2 px-3 py-2 text-sm">
-                <div className="min-w-0">
-                  <div className="truncate">{r.name}</div>
-                  <div className="truncate text-[11px] text-muted-foreground">{r.phone}</div>
-                </div>
-                <button onClick={() => openWhatsApp(r)} className="inline-flex items-center gap-1 rounded-full bg-neon/20 px-2.5 py-1 text-[10px] font-bold uppercase text-neon hover:bg-neon/30">
-                  <MessageCircle className="h-3 w-3" /> Send
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </AppPanel>
-    </div>
-  );
-}
-
-/* ---------------- Check-in ---------------- */
-
-function CheckInTab({ regs, onChange, onOpen }: { regs: RegistrationDoc[]; onChange: (r: RegistrationDoc) => void; onOpen: (r: RegistrationDoc) => void }) {
-  const [q, setQ] = useState("");
-  const approved = regs;
-  const checked = approved.filter(r => r.checkedIn).length;
-
-  const filtered = approved.filter((r) => {
-    if (!q.trim()) return true;
-    const n = q.toLowerCase();
-    return [r.name, r.email, r.phone, r.teamName].filter(Boolean).some((s) => String(s).toLowerCase().includes(n));
-  });
-
-  const toggle = async (r: RegistrationDoc) => {
-    const next = !r.checkedIn;
-    onChange({ ...r, checkedIn: next });
-    try {
-      await updateRegistration(r.id, { checkedIn: next });
-      toast.success(next ? `Checked in ${r.name}` : "Undo check-in");
-    } catch (e: any) {
-      toast.error("Failed", { description: e?.message });
-    }
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-3">
-        <Stat label="Approved" value={approved.length} tone="text-foreground" />
-        <Stat label="Checked in" value={checked} tone="text-neon" />
-        <Stat label="Remaining" value={approved.length - checked} tone="text-yellow-400" />
-      </div>
-
-      <AppPanel>
-        <div className="relative mb-4">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Type a name, phone or team to find…" className="w-full rounded-full border border-border bg-surface-2 pl-10 pr-4 py-3 text-sm outline-none focus:border-neon" />
-        </div>
-
-        {filtered.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-            {approved.length === 0 ? "No approved attendees yet." : "No matches."}
-          </div>
-        ) : (
-          <ul className="divide-y divide-border/50">
-            {filtered.map((r) => (
-              <li key={r.id} className="flex items-center gap-3 py-3">
-                <button onClick={() => onOpen(r)} className="min-w-0 flex-1 text-left">
-                  <div className="font-medium">{r.name}</div>
-                  <div className="text-xs text-muted-foreground">{r.collegeName} · {r.phone}</div>
-                </button>
-                <button
-                  onClick={() => toggle(r)}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-widest",
-                    r.checkedIn ? "bg-neon text-neon-foreground" : "border border-border bg-surface-2 hover:bg-surface",
-                  )}
-                >
-                  <BadgeCheck className="h-3.5 w-3.5" /> {r.checkedIn ? "In" : "Check in"}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </AppPanel>
-    </div>
-  );
-}
 
 /* ---------------- Export ---------------- */
 

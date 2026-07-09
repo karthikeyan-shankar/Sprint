@@ -225,26 +225,18 @@ function RegisterPage() {
         <h1 className="mt-1 font-display text-4xl uppercase leading-none md:text-5xl">{e.title}</h1>
       </section>
 
-      <section className="mx-auto grid max-w-6xl gap-8 px-6 pb-20 lg:grid-cols-[2fr_1fr]">
+      <section className="mx-auto max-w-xl px-6 pb-20">
         <form onSubmit={submit} className="rounded-3xl border border-border bg-card p-6 space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Full name *"><input className={inputCls} value={form.name} onChange={x => setForm({ ...form, name: x.target.value })} /></Field>
-            <Field label="Email *"><input type="email" className={inputCls} value={form.email} onChange={x => setForm({ ...form, email: x.target.value })} /></Field>
-            <Field label="Phone *"><input type="tel" className={inputCls} placeholder="+91 98765 43210" value={form.phone} onChange={x => setForm({ ...form, phone: x.target.value })} /></Field>
-            <Field label="Gender">
-              <select className={inputCls} value={form.gender} onChange={x => setForm({ ...form, gender: x.target.value as any })}>
-                <option>Male</option><option>Female</option><option>Other</option>
-              </select>
-            </Field>
-            <Field label="College"><input className={inputCls} placeholder="e.g. Anna University" value={form.collegeName} onChange={x => setForm({ ...form, collegeName: x.target.value })} /></Field>
-            <Field label="Department"><input className={inputCls} placeholder="Computer Science" value={form.department} onChange={x => setForm({ ...form, department: x.target.value })} /></Field>
-            <Field label="Year">
-              <select className={inputCls} value={form.year} onChange={x => setForm({ ...form, year: x.target.value })}>
-                {["1st Year", "2nd Year", "3rd Year", "4th Year", "PG"].map(y => <option key={y}>{y}</option>)}
-              </select>
-            </Field>
-            <Field label="Team name (if any)"><input className={inputCls} placeholder="Optional" value={form.teamName} onChange={x => setForm({ ...form, teamName: x.target.value })} /></Field>
+          <div className="rounded-2xl border border-border bg-surface-2 p-4 text-center">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Registering as</div>
+            <div className="mt-1 font-semibold text-foreground">{user?.name || "Student"}</div>
+            <div className="text-xs text-muted-foreground">{user?.email}</div>
+            {user?.collegeId && <div className="mt-1 text-[10px] text-muted-foreground">{user.collegeId}</div>}
           </div>
+
+          <Field label="Phone number *">
+            <input type="tel" className={inputCls} placeholder="+91 98765 43210" value={form.phone} onChange={x => setForm({ ...form, phone: x.target.value })} />
+          </Field>
 
           {e.fee > 0 && (
             <>
@@ -259,15 +251,6 @@ function RegisterPage() {
                     <img src={e.upiQrUrl} alt="Payment QR" className="h-24 w-24 rounded-xl border border-border bg-white p-1" />
                   )}
                 </div>
-              </div>
-              <div className="rounded-2xl border border-neon/30 bg-neon/5 p-4 text-xs text-muted-foreground">
-                <p className="font-bold text-neon mb-1 uppercase tracking-widest">How to find Transaction ID:</p>
-                <ul className="list-disc list-inside space-y-1">
-                  <li><b>GPay:</b> Open transaction, look for 12-digit <b>UPI transaction ID</b></li>
-                  <li><b>PhonePe:</b> Tap History, look for 12-digit <b>UTR</b></li>
-                  <li><b>Paytm:</b> Check transaction details for <b>UPI Ref No</b></li>
-                </ul>
-                <p className="mt-2 text-[11px]">Upload a screenshot that clearly shows this 12-digit number.</p>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="12-digit UTR / Txn ID *"><input className={inputCls} placeholder="e.g. 312345678901" value={form.txnId} onChange={x => setForm({ ...form, txnId: x.target.value })} /></Field>
@@ -291,43 +274,10 @@ function RegisterPage() {
             </div>
           )}
 
-          <Field label="Special notes (optional)"><textarea rows={3} className={inputCls} placeholder="Accessibility needs, dietary requirements, etc." value={form.notes} onChange={x => setForm({ ...form, notes: x.target.value })} /></Field>
-
-
           <button type="submit" disabled={submitting || uploadingScreenshot} className="w-full rounded-full bg-neon py-3.5 text-sm font-bold uppercase tracking-widest text-neon-foreground neon-glow disabled:opacity-60">
             {submitting ? "Submitting…" : uploadingScreenshot ? "Uploading screenshot…" : "Submit registration"}
           </button>
         </form>
-
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-border bg-card p-5">
-            <div className="font-display text-xl uppercase mb-4">Event summary</div>
-            {e.poster ? (
-              <img src={e.poster} alt={e.title} className="mb-3 h-20 w-full rounded-2xl object-cover" />
-            ) : (
-              <div className="mb-3 h-20 w-full rounded-2xl bg-surface-2" />
-            )}
-            {cat && <div className="text-xs uppercase tracking-widest" style={{ color: cat.accent }}>{cat.label}</div>}
-            <div className="mt-1 font-semibold">{e.title}</div>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li><span className="text-foreground font-medium">Date:</span> {formatDate(e.date)}</li>
-              <li><span className="text-foreground font-medium">Time:</span> {e.time}</li>
-              <li><span className="text-foreground font-medium">Venue:</span> {e.venue}, {e.city}</li>
-              <li><span className="text-foreground font-medium">Fee:</span> {e.fee === 0 ? "FREE" : `₹${e.fee}`}</li>
-              <li><span className="text-foreground font-medium">Host:</span> {e.hostName || e.collegeName}</li>
-            </ul>
-          </div>
-
-          <div className="rounded-3xl border border-border bg-card p-5">
-            <div className="font-display text-xl uppercase mb-2">What happens next?</div>
-            <ol className="space-y-2 text-sm text-muted-foreground list-decimal list-inside">
-              <li>Submit this form with your payment.</li>
-              <li>Organizer verifies payment & approves.</li>
-              <li>You'll receive a confirmation notification.</li>
-              <li>Show this confirmation at the venue.</li>
-            </ol>
-          </div>
-        </div>
       </section>
 
       <Footer />
