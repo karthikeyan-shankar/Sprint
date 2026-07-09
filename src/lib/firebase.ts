@@ -93,13 +93,29 @@ export function onFirebaseAuth(cb: (u: FbUser | null) => void) {
 }
 
 export async function uploadImage(file: File, path: string): Promise<string> {
-  const { storage } = getFirebase();
-  if (!storage) throw new Error("Firebase Storage unavailable");
-  const ext = file.name.split('.').pop();
-  const filename = `${path}/${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
-  const storageRef = ref(storage, filename);
-  await uploadBytes(storageRef, file);
-  return getDownloadURL(storageRef);
+  // Using Cloudinary for free unsigned image uploads instead of Firebase Storage
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "sprint_uploads");
+  
+  // Optional: organize uploads into folders based on the path
+  if (path) {
+    formData.append("folder", path);
+  }
+
+  const res = await fetch("https://api.cloudinary.com/v1_1/kb1eqiqi/image/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("Cloudinary upload error:", errorText);
+    throw new Error("Failed to upload image. Please try again.");
+  }
+
+  const data = await res.json();
+  return data.secure_url;
 }
 
 export type { FbUser };
