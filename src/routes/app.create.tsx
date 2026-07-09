@@ -84,6 +84,7 @@ function CreateEvent() {
   const [category, setCategory] = useState<CategoryKey | null>(null);
   const [hostType, setHostType] = useState<HostType>("College");
   const [poster, setPoster] = useState<string | null>(null);
+  const [posterFile, setPosterFile] = useState<File | null>(null);
   const [gallery, setGallery] = useState<string[]>([]);
   const [saving, setSaving] = useState<null | EventStatus>(null);
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
@@ -168,6 +169,11 @@ function CreateEvent() {
         payload.upiQrUrl = await uploadImage(upiQrFile, 'qrcodes');
       }
 
+      if (posterFile) {
+        toast.message("Uploading poster...");
+        payload.poster = await uploadImage(posterFile, 'posters');
+      }
+
       const id = await createEvent(payload);
       toast.success(status === "published" ? "Event published!" : "Draft saved");
       navigate({ to: "/app/events/$id", params: { id } });
@@ -191,8 +197,8 @@ function CreateEvent() {
 
   const onPoster = (files: FileList | null) => {
     if (!files?.[0]) return;
+    setPosterFile(files[0]);
     setPoster(URL.createObjectURL(files[0]));
-    toast.message("Poster preview only — image upload wires to Firebase Storage in the next step.");
   };
   const onGallery = (files: FileList | null) => {
     if (!files) return;
@@ -463,7 +469,6 @@ function CreateEvent() {
               )}
               <input type="file" accept="image/*" className="hidden" onChange={(e) => onPoster(e.target.files)} />
             </label>
-            <p className="mt-2 text-[10px] text-muted-foreground">Image upload will save to Firebase Storage in the next step.</p>
           </AppPanel>
 
           <AppPanel title="Gallery">

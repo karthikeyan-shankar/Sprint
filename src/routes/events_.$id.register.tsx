@@ -217,16 +217,35 @@ function RegisterPage() {
     <div className="min-h-screen">
       <Navbar />
 
-      <section className="mx-auto max-w-6xl px-6 py-10">
-        <Link to="/events/$id" params={{ id: e.id }} className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-neon">
-          <ArrowLeft className="h-3 w-3" /> Back to event
-        </Link>
-        <div className="mt-4 text-xs font-bold uppercase tracking-widest text-neon">Register</div>
-        <h1 className="mt-1 font-display text-4xl uppercase leading-none md:text-5xl">{e.title}</h1>
-      </section>
+      <section className="mx-auto max-w-6xl px-6 py-10 pb-20">
+        <div className="mb-10">
+          <Link to="/events/$id" params={{ id: e.id }} className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-neon">
+            <ArrowLeft className="h-3 w-3" /> Back to event
+          </Link>
+          <div className="mt-4 text-xs font-bold uppercase tracking-widest text-neon">Register</div>
+          <h1 className="mt-1 font-display text-4xl uppercase leading-none md:text-5xl">{e.title}</h1>
+        </div>
 
-      <section className="mx-auto max-w-xl px-6 pb-20">
-        <form onSubmit={submit} className="rounded-3xl border border-border bg-card p-6 space-y-6">
+        <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
+          <div className="order-2 lg:order-1">
+            <div className="sticky top-24 space-y-6">
+              {e.poster ? (
+                <img src={e.poster} alt={e.title} className="w-full rounded-3xl border border-border bg-surface-2 object-cover aspect-[4/5]" />
+              ) : (
+                <div className="flex w-full aspect-[4/5] items-center justify-center rounded-3xl border border-border bg-surface-2 p-10 text-center">
+                  <div className="font-display text-4xl uppercase text-muted-foreground opacity-20">{e.title}</div>
+                </div>
+              )}
+              <div className="rounded-2xl border border-border bg-surface-2 p-6">
+                 <div className="text-lg font-semibold">{e.title}</div>
+                 <div className="mt-1 text-sm text-muted-foreground">{formatDate(e.date)} • {e.time}</div>
+                 <div className="mt-1 text-sm text-muted-foreground">{e.venue}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="order-1 lg:order-2">
+            <form onSubmit={submit} className="space-y-6 rounded-3xl border border-border bg-card p-6 lg:p-8">
           <div className="rounded-2xl border border-border bg-surface-2 p-4 text-center">
             <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Registering as</div>
             <div className="mt-1 font-semibold text-foreground">{user?.name || "Student"}</div>
@@ -278,6 +297,8 @@ function RegisterPage() {
             {submitting ? "Submitting…" : uploadingScreenshot ? "Uploading screenshot…" : "Submit registration"}
           </button>
         </form>
+        </div>
+        </div>
       </section>
 
       <Footer />
