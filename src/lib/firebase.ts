@@ -103,7 +103,7 @@ export async function uploadImage(file: File, path: string): Promise<string> {
     formData.append("folder", path);
   }
 
-  const res = await fetch("https://api.cloudinary.com/v1_1/kb1eqiqi/image/upload", {
+  const res = await fetch("https://api.cloudinary.com/v1_1/kb1egiqi/image/upload", {
     method: "POST",
     body: formData,
   });
