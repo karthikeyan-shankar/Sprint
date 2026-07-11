@@ -21,12 +21,12 @@ function CollegesPage() {
     <div className="min-h-screen">
       <Navbar />
       <section className="mx-auto max-w-7xl px-6 pt-12">
-        <div className="text-xs font-bold uppercase tracking-widest text-neon">Colleges</div>
+        <div className="text-xs font-bold uppercase tracking-widest text-neon">Colleges & Clubs</div>
         <h1 className="mt-2 font-display text-5xl uppercase leading-none md:text-7xl">
-          A digital home for <span className="text-neon">every campus.</span>
+          A digital home for <span className="text-neon">every campus & club.</span>
         </h1>
         <p className="mt-4 max-w-2xl text-muted-foreground">
-          Each college on Sprint gets its own public page — upcoming events, past events, followers and a gallery. Currently onboarding colleges across Tamil Nadu.
+          Each college and club on Sprint gets its own public page — upcoming events, past events, followers and a gallery. Currently onboarding across Tamil Nadu.
         </p>
       </section>
 
@@ -35,9 +35,9 @@ function CollegesPage() {
           <EmptyState
             icon={GraduationCap}
             eyebrow="Onboarding"
-            title="Sprint is currently onboarding colleges."
-            body="Want your college listed on Sprint? Request a listing and we'll set up your public college page with your logo, cover and event calendar."
-            primary={{ label: "Request college listing", href: "mailto:hello@sprint.app?subject=Request%20College%20Listing" }}
+            title="Sprint is currently onboarding colleges and clubs."
+            body="Want your college or club listed on Sprint? Request a listing and we'll set up your public page with your logo, cover and event calendar."
+            primary={{ label: "Request Listing", href: "mailto:karthikeyanshankar8@gmail.com?subject=Request%20Listing%20on%20Sprint" }}
             secondary={{ label: "Why Sprint", to: "/why" }}
           />
         ) : (
