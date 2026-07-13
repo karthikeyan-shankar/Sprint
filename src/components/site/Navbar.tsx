@@ -7,9 +7,9 @@ import { cn } from "@/lib/utils";
 
 const nav = [
   { to: "/explore", label: "Explore" },
-  { to: "/why", label: "Why Sprint" },
+  { to: "/arena", label: "Arena" },
+  { to: "/practice", label: "Practice" },
   { to: "/colleges", label: "Colleges" },
-  { to: "/discover", label: "Discover" },
 ];
 
 
@@ -148,9 +148,9 @@ export function Footer() {
         </div>
         <FooterCol title="Platform" links={[
           { label: "Explore", href: "/explore" },
-          { label: "Discover", href: "/discover" },
+          { label: "Arena", href: "/arena" },
+          { label: "Practice", href: "/practice" },
           { label: "Colleges", href: "/colleges" },
-          { label: "Search", href: "/search" },
         ]} />
         <FooterCol title="For you" links={[
           { label: "Create event", href: "/app/create" },
