@@ -42,6 +42,7 @@ function OrgPage() {
   // Derive organizer info from their first event
   const orgName = events[0].organizerName || events[0].hostName || "Organizer";
   const collegeName = events[0].collegeName || "";
+  const displayName = collegeName || orgName;
   const pageUrl = window.location.href;
 
   return (
@@ -52,7 +53,7 @@ function OrgPage() {
         {/* Background giant text */}
         <div className="pointer-events-none absolute -left-10 -top-10 select-none opacity-[0.03]">
           <h2 className="font-display text-[15rem] leading-none tracking-tighter text-foreground whitespace-nowrap">
-            {orgName.toUpperCase()}
+            {displayName.toUpperCase()}
           </h2>
         </div>
         <div className="pointer-events-none absolute -bottom-32 right-0 h-96 w-96 rounded-full bg-neon/20 blur-[140px]" />
@@ -72,16 +73,14 @@ function OrgPage() {
           <div className="max-w-4xl space-y-6">
             <h1 className="font-display text-6xl uppercase leading-[0.85] tracking-tighter text-foreground sm:text-7xl lg:text-8xl">
               <span className="inline-block origin-bottom-left -rotate-1 transform-gpu text-neon">
-                {orgName}
+                {displayName}
               </span>
               <br />
-              Registration Desk
+              Exclusive Portal
             </h1>
-            {collegeName && (
-              <p className="max-w-lg border-l-2 border-neon pl-6 text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Hosted by {collegeName}. Access all upcoming events, symposiums, and hackathons exclusively on this portal.
-              </p>
-            )}
+            <p className="max-w-lg border-l-2 border-neon pl-6 text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Official registration desk. Access all upcoming events, symposiums, and hackathons exclusively on this portal.
+            </p>
           </div>
 
           <div className="mt-12 flex flex-wrap gap-4">
@@ -157,7 +156,7 @@ function OrgPage() {
             >
               <X className="h-5 w-5" />
             </button>
-            <h3 className="mb-2 font-display text-2xl uppercase">{orgName}</h3>
+            <h3 className="mb-2 font-display text-2xl uppercase">{displayName}</h3>
             <p className="mb-8 text-sm text-muted-foreground">Scan to view all events</p>
             
             <div className="mx-auto inline-block rounded-2xl bg-white p-4 shadow-xl">
