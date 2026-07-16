@@ -11,13 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WhyRouteImport } from './routes/why'
 import { Route as SearchRouteImport } from './routes/search'
-import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as CollegesRouteImport } from './routes/colleges'
-import { Route as ArenaRouteImport } from './routes/arena'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
@@ -32,8 +30,6 @@ import { Route as AppBookmarksRouteImport } from './routes/app.bookmarks'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as EventsIdRegisterRouteImport } from './routes/events_.$id.register'
-import { Route as ArenaPlayRoomIdRouteImport } from './routes/arena.play.$roomId'
-import { Route as ArenaHostRoomIdRouteImport } from './routes/arena.host.$roomId'
 import { Route as AppEventsIdRouteImport } from './routes/app.events.$id'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
@@ -45,11 +41,6 @@ const WhyRoute = WhyRouteImport.update({
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PracticeRoute = PracticeRouteImport.update({
-  id: '/practice',
-  path: '/practice',
   getParentRoute: () => rootRouteImport,
 } as any)
 const McpRoute = McpRouteImport.update({
@@ -75,11 +66,6 @@ const DiscoverRoute = DiscoverRouteImport.update({
 const CollegesRoute = CollegesRouteImport.update({
   id: '/colleges',
   path: '/colleges',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ArenaRoute = ArenaRouteImport.update({
-  id: '/arena',
-  path: '/arena',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -154,16 +140,6 @@ const EventsIdRegisterRoute = EventsIdRegisterRouteImport.update({
   path: '/events/$id/register',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ArenaPlayRoomIdRoute = ArenaPlayRoomIdRouteImport.update({
-  id: '/play/$roomId',
-  path: '/play/$roomId',
-  getParentRoute: () => ArenaRoute,
-} as any)
-const ArenaHostRoomIdRoute = ArenaHostRoomIdRouteImport.update({
-  id: '/host/$roomId',
-  path: '/host/$roomId',
-  getParentRoute: () => ArenaRoute,
-} as any)
 const AppEventsIdRoute = AppEventsIdRouteImport.update({
   id: '/events/$id',
   path: '/events/$id',
@@ -179,13 +155,11 @@ const Char91DotmcpChar93InvokeToolToolRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
-  '/arena': typeof ArenaRouteWithChildren
   '/colleges': typeof CollegesRouteWithChildren
   '/discover': typeof DiscoverRoute
   '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
-  '/practice': typeof PracticeRoute
   '/search': typeof SearchRoute
   '/why': typeof WhyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -201,19 +175,15 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AppIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/events/$id': typeof AppEventsIdRoute
-  '/arena/host/$roomId': typeof ArenaHostRoomIdRoute
-  '/arena/play/$roomId': typeof ArenaPlayRoomIdRoute
   '/events/$id/register': typeof EventsIdRegisterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/arena': typeof ArenaRouteWithChildren
   '/colleges': typeof CollegesRouteWithChildren
   '/discover': typeof DiscoverRoute
   '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
-  '/practice': typeof PracticeRoute
   '/search': typeof SearchRoute
   '/why': typeof WhyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -229,21 +199,17 @@ export interface FileRoutesByTo {
   '/app': typeof AppIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/events/$id': typeof AppEventsIdRoute
-  '/arena/host/$roomId': typeof ArenaHostRoomIdRoute
-  '/arena/play/$roomId': typeof ArenaPlayRoomIdRoute
   '/events/$id/register': typeof EventsIdRegisterRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
-  '/arena': typeof ArenaRouteWithChildren
   '/colleges': typeof CollegesRouteWithChildren
   '/discover': typeof DiscoverRoute
   '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
-  '/practice': typeof PracticeRoute
   '/search': typeof SearchRoute
   '/why': typeof WhyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -259,8 +225,6 @@ export interface FileRoutesById {
   '/app/': typeof AppIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/events/$id': typeof AppEventsIdRoute
-  '/arena/host/$roomId': typeof ArenaHostRoomIdRoute
-  '/arena/play/$roomId': typeof ArenaPlayRoomIdRoute
   '/events_/$id/register': typeof EventsIdRegisterRoute
 }
 export interface FileRouteTypes {
@@ -268,13 +232,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
-    | '/arena'
     | '/colleges'
     | '/discover'
     | '/explore'
     | '/login'
     | '/mcp'
-    | '/practice'
     | '/search'
     | '/why'
     | '/.mcp/list-tools'
@@ -290,19 +252,15 @@ export interface FileRouteTypes {
     | '/app/'
     | '/.mcp/invoke-tool/$tool'
     | '/app/events/$id'
-    | '/arena/host/$roomId'
-    | '/arena/play/$roomId'
     | '/events/$id/register'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/arena'
     | '/colleges'
     | '/discover'
     | '/explore'
     | '/login'
     | '/mcp'
-    | '/practice'
     | '/search'
     | '/why'
     | '/.mcp/list-tools'
@@ -318,20 +276,16 @@ export interface FileRouteTypes {
     | '/app'
     | '/.mcp/invoke-tool/$tool'
     | '/app/events/$id'
-    | '/arena/host/$roomId'
-    | '/arena/play/$roomId'
     | '/events/$id/register'
   id:
     | '__root__'
     | '/'
     | '/app'
-    | '/arena'
     | '/colleges'
     | '/discover'
     | '/explore'
     | '/login'
     | '/mcp'
-    | '/practice'
     | '/search'
     | '/why'
     | '/.mcp/list-tools'
@@ -347,21 +301,17 @@ export interface FileRouteTypes {
     | '/app/'
     | '/.mcp/invoke-tool/$tool'
     | '/app/events/$id'
-    | '/arena/host/$roomId'
-    | '/arena/play/$roomId'
     | '/events_/$id/register'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
-  ArenaRoute: typeof ArenaRouteWithChildren
   CollegesRoute: typeof CollegesRouteWithChildren
   DiscoverRoute: typeof DiscoverRoute
   ExploreRoute: typeof ExploreRoute
   LoginRoute: typeof LoginRoute
   McpRoute: typeof McpRoute
-  PracticeRoute: typeof PracticeRoute
   SearchRoute: typeof SearchRoute
   WhyRoute: typeof WhyRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
@@ -385,13 +335,6 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/practice': {
-      id: '/practice'
-      path: '/practice'
-      fullPath: '/practice'
-      preLoaderRoute: typeof PracticeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mcp': {
@@ -427,13 +370,6 @@ declare module '@tanstack/react-router' {
       path: '/colleges'
       fullPath: '/colleges'
       preLoaderRoute: typeof CollegesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/arena': {
-      id: '/arena'
-      path: '/arena'
-      fullPath: '/arena'
-      preLoaderRoute: typeof ArenaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -534,20 +470,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsIdRegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/arena/play/$roomId': {
-      id: '/arena/play/$roomId'
-      path: '/play/$roomId'
-      fullPath: '/arena/play/$roomId'
-      preLoaderRoute: typeof ArenaPlayRoomIdRouteImport
-      parentRoute: typeof ArenaRoute
-    }
-    '/arena/host/$roomId': {
-      id: '/arena/host/$roomId'
-      path: '/host/$roomId'
-      fullPath: '/arena/host/$roomId'
-      preLoaderRoute: typeof ArenaHostRoomIdRouteImport
-      parentRoute: typeof ArenaRoute
-    }
     '/app/events/$id': {
       id: '/app/events/$id'
       path: '/events/$id'
@@ -589,18 +511,6 @@ const AppRouteChildren: AppRouteChildren = {
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
-interface ArenaRouteChildren {
-  ArenaHostRoomIdRoute: typeof ArenaHostRoomIdRoute
-  ArenaPlayRoomIdRoute: typeof ArenaPlayRoomIdRoute
-}
-
-const ArenaRouteChildren: ArenaRouteChildren = {
-  ArenaHostRoomIdRoute: ArenaHostRoomIdRoute,
-  ArenaPlayRoomIdRoute: ArenaPlayRoomIdRoute,
-}
-
-const ArenaRouteWithChildren = ArenaRoute._addFileChildren(ArenaRouteChildren)
-
 interface CollegesRouteChildren {
   CollegesIdRoute: typeof CollegesIdRoute
 }
@@ -616,13 +526,11 @@ const CollegesRouteWithChildren = CollegesRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
-  ArenaRoute: ArenaRouteWithChildren,
   CollegesRoute: CollegesRouteWithChildren,
   DiscoverRoute: DiscoverRoute,
   ExploreRoute: ExploreRoute,
   LoginRoute: LoginRoute,
   McpRoute: McpRoute,
-  PracticeRoute: PracticeRoute,
   SearchRoute: SearchRoute,
   WhyRoute: WhyRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
@@ -635,3 +543,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
