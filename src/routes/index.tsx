@@ -6,6 +6,7 @@ import {
 import { Navbar, Footer } from "@/components/site/Navbar";
 import { Logo } from "@/components/Logo";
 import { CATEGORIES } from "@/lib/mock-data";
+import heroImg from "@/assets/hero-coral.png";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -41,56 +42,129 @@ function Landing() {
   );
 }
 
-/* ---------------- Hero ---------------- */
+/* ---------------- Kinetic Brutalist Hero ---------------- */
 function Hero() {
   return (
-    <section className="relative overflow-hidden pt-8">
-      <div className="grid-court absolute inset-0 opacity-30 [mask-image:radial-gradient(ellipse_at_center,black_0%,transparent_70%)]" />
-      <div className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-neon/20 blur-[120px]" />
-      <div className="relative mx-auto max-w-7xl px-6 pt-16 pb-24 sm:pt-24">
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest backdrop-blur">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-neon" />
-          Early Access · Onboarding colleges across Tamil Nadu
-        </div>
-        <h1 className="text-display text-6xl uppercase text-foreground sm:text-8xl md:text-[9.5rem]">
-          One Platform.<br />
-          Every College <span className="text-neon">Event.</span>
-        </h1>
-        <div className="mt-8 grid gap-8 md:grid-cols-2 md:items-end">
-          <p className="max-w-xl text-lg text-muted-foreground">
-            Sprint helps colleges create, publish, manage and discover campus events
-            without depending on WhatsApp groups, Google Forms or Excel sheets.
-            Symposiums, hackathons, culturals, sports, workshops, placement drives —
-            all in one place.
-          </p>
-          <div className="flex flex-wrap gap-3 md:justify-end">
-            <Link to="/app/create" className="group inline-flex items-center gap-2 rounded-full bg-neon px-6 py-3.5 font-bold uppercase tracking-wide text-neon-foreground neon-glow">
-              Publish your first event <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+    <section className="relative overflow-hidden bg-ink px-4 py-16 sm:px-8 sm:py-20 lg:py-24">
+      {/* Background giant SPRINT */}
+      <div className="pointer-events-none absolute -left-10 -top-10 select-none opacity-[0.05]">
+        <h2 className="font-display text-[22rem] leading-none tracking-tighter text-foreground">SPRINT</h2>
+      </div>
+      <div className="pointer-events-none absolute -bottom-32 right-0 h-96 w-96 rounded-full bg-neon/20 blur-[140px]" />
+
+      <div className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 lg:grid-cols-12">
+        {/* Content column */}
+        <div className="space-y-10 lg:col-span-7">
+          {/* Eyebrow */}
+          <div className="flex items-center gap-4">
+            <div className="flex h-6 items-center bg-neon px-3">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neon-foreground">
+                Early Access · 2026
+              </span>
+            </div>
+            <div className="hidden h-px flex-1 bg-border md:block" />
+          </div>
+
+          {/* Headline */}
+          <div className="space-y-6">
+            <h1 className="font-display text-7xl uppercase leading-[0.8] tracking-tighter text-foreground sm:text-8xl lg:text-[9rem]">
+              Run your<br />
+              <span className="inline-block -rotate-1 transform-gpu text-neon">Events</span> faster
+            </h1>
+            <p className="max-w-lg border-l-2 border-neon pl-6 text-base leading-relaxed text-muted-foreground sm:text-lg">
+              The platform for Tamil Nadu's college fests. Publish events, take
+              registrations, track payments and export clean XLSX — without
+              WhatsApp groups, Google Forms or Excel chaos.
+            </p>
+          </div>
+
+          {/* CTAs */}
+          <div className="flex flex-wrap gap-4 pt-2">
+            <Link
+              to="/app/create"
+              className="group relative bg-neon px-10 py-5 font-display text-2xl uppercase text-neon-foreground transition-all hover:brightness-110"
+            >
+              Publish first event
+              <span className="ml-2 inline-block transition-transform group-hover:translate-x-2">→</span>
+              <span className="absolute -bottom-1 -right-1 h-3 w-3 border-b-2 border-r-2 border-foreground" />
             </Link>
-            <Link to="/explore" className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-6 py-3.5 font-semibold uppercase tracking-wide backdrop-blur hover:bg-surface-2">
+            <Link
+              to="/explore"
+              className="border-2 border-border bg-transparent px-10 py-5 font-display text-2xl uppercase text-foreground transition-all hover:border-neon hover:text-neon"
+            >
               Explore Sprint
             </Link>
           </div>
+
+          {/* Metric strip */}
+          <div className="grid grid-cols-3 gap-8 border-t border-border pt-8">
+            {[
+              { v: "50+", k: "Colleges live" },
+              { v: "Secure", k: "Payment tracking" },
+              { v: "Fast", k: "XLSX export" },
+            ].map((m) => (
+              <div key={m.k}>
+                <p className="font-display text-4xl uppercase text-foreground">{m.v}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{m.k}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Early access trust bar (no fake stats) */}
-        <div className="glass mt-16 grid grid-cols-1 gap-1 overflow-hidden rounded-3xl md:grid-cols-3">
-          {[
-            { k: "Early Access", v: "For colleges, clubs & organizers in Tamil Nadu", icon: Sparkles },
-            { k: "One workflow", v: "Publish → Register → Track → Export", icon: LayoutDashboard },
-            { k: "Zero setup", v: "No forms. No spreadsheets. No WhatsApp chaos.", icon: Zap },
-          ].map(s => (
-            <div key={s.k} className="border-r border-border px-6 py-8 last:border-r-0">
-              <s.icon className="h-5 w-5 text-neon" />
-              <div className="mt-4 font-display text-2xl uppercase leading-tight">{s.k}</div>
-              <div className="mt-1 text-xs text-muted-foreground">{s.v}</div>
+        {/* Visual column */}
+        <div className="relative lg:col-span-5">
+          <div className="relative">
+            {/* main poster */}
+            <div className="group relative z-20">
+              <img
+                src={heroImg}
+                alt="Sprint college event"
+                className="aspect-[3/4] w-full object-cover shadow-2xl grayscale transition-all duration-500 group-hover:grayscale-0"
+                width={800}
+                height={1067}
+              />
+              {/* corner bracket */}
+              <div className="absolute -right-4 -top-4 z-30 h-24 w-24 border-r-4 border-t-4 border-neon sm:-right-6 sm:-top-6 sm:h-32 sm:w-32" />
+
+              {/* neon bottom badge */}
+              <div className="absolute -bottom-4 -left-4 z-30 bg-neon p-5 sm:p-6">
+                <div className="font-display text-2xl leading-none text-neon-foreground sm:text-3xl">TN-FEST '26</div>
+                <div className="text-[10px] font-black uppercase tracking-tight text-neon-foreground/70">Verified Organizer</div>
+              </div>
+
+              {/* tilted revenue card */}
+              <div className="absolute -left-8 top-10 z-40 rotate-[-5deg] bg-card p-4 shadow-2xl">
+                <div className="flex items-center gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-full bg-neon">
+                    <CheckCircle2 className="h-5 w-5 text-neon-foreground" strokeWidth={3} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase text-muted-foreground">Total revenue</p>
+                    <p className="font-display text-2xl leading-none text-foreground">₹1,42,000</p>
+                  </div>
+                </div>
+              </div>
             </div>
-          ))}
+
+            {/* decorative rotated frames */}
+            <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[80%] w-[120%] -translate-x-1/2 -translate-y-1/2 rotate-12 border border-border" />
+            <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[80%] w-[120%] -translate-x-1/2 -translate-y-1/2 -rotate-6 border border-neon/20" />
+          </div>
         </div>
+      </div>
+
+      {/* bottom accent */}
+      <div className="relative z-10 mt-16 flex h-1.5 w-full">
+        <div className="flex-1 bg-neon" />
+        <div className="flex-1 bg-neon/60" />
+        <div className="flex-1 bg-neon/30" />
+        <div className="flex-1 bg-neon/10" />
       </div>
     </section>
   );
 }
+
+
 
 function MarqueeStrip() {
   const items = ["SYMPOSIUM", "★", "HACKATHON", "★", "CULTURAL", "★", "SPORTS", "★", "PLACEMENT", "★", "WORKSHOP", "★", "GUEST LECTURE", "★", "STARTUP"];

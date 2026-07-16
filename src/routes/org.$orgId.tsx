@@ -47,28 +47,61 @@ function OrgPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Exclusive Header */}
-      <header className="border-b border-border bg-surface/50 py-16 backdrop-blur-md">
-        <div className="mx-auto max-w-6xl px-6 text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-neon/30 bg-neon/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-neon">
-            Official Portal
-          </div>
-          <h1 className="mb-4 font-display text-5xl uppercase sm:text-7xl">
-            {orgName}
-          </h1>
-          {collegeName && (
-            <p className="text-lg text-muted-foreground uppercase tracking-widest">
-              {collegeName}
-            </p>
-          )}
+      {/* Exclusive Header - Brutalist Design */}
+      <header className="relative overflow-hidden bg-ink px-4 py-16 sm:px-8 sm:py-20 lg:py-24">
+        {/* Background giant text */}
+        <div className="pointer-events-none absolute -left-10 -top-10 select-none opacity-[0.03]">
+          <h2 className="font-display text-[15rem] leading-none tracking-tighter text-foreground whitespace-nowrap">
+            {orgName.toUpperCase()}
+          </h2>
+        </div>
+        <div className="pointer-events-none absolute -bottom-32 right-0 h-96 w-96 rounded-full bg-neon/20 blur-[140px]" />
 
-          <div className="mt-8 flex justify-center">
+        <div className="relative z-10 mx-auto max-w-6xl">
+          {/* Eyebrow */}
+          <div className="mb-8 flex items-center gap-4">
+            <div className="flex h-6 items-center bg-neon px-3">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neon-foreground">
+                Official Portal
+              </span>
+            </div>
+            <div className="hidden h-px flex-1 bg-border md:block" />
+          </div>
+
+          {/* Headline */}
+          <div className="max-w-4xl space-y-6">
+            <h1 className="font-display text-6xl uppercase leading-[0.85] tracking-tighter text-foreground sm:text-7xl lg:text-8xl">
+              <span className="inline-block origin-bottom-left -rotate-1 transform-gpu text-neon">
+                {orgName}
+              </span>
+              <br />
+              Registration Desk
+            </h1>
+            {collegeName && (
+              <p className="max-w-lg border-l-2 border-neon pl-6 text-base leading-relaxed text-muted-foreground sm:text-lg">
+                Hosted by {collegeName}. Access all upcoming events, symposiums, and hackathons exclusively on this portal.
+              </p>
+            )}
+          </div>
+
+          <div className="mt-12 flex flex-wrap gap-4">
             <button
               onClick={() => setShowQr(true)}
-              className="flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold uppercase tracking-widest text-black hover:bg-gray-200 transition-colors"
+              className="group relative bg-neon px-10 py-5 font-display text-2xl uppercase text-neon-foreground transition-all hover:brightness-110"
             >
-              <QrCode className="h-4 w-4" /> Get QR Code
+              Get QR Code
+              <span className="ml-2 inline-block transition-transform group-hover:translate-x-2">→</span>
+              <span className="absolute -bottom-1 -right-1 h-3 w-3 border-b-2 border-r-2 border-foreground" />
             </button>
           </div>
+        </div>
+
+        {/* bottom accent */}
+        <div className="absolute bottom-0 left-0 right-0 z-10 flex h-1.5 w-full">
+          <div className="flex-1 bg-neon" />
+          <div className="flex-1 bg-neon/60" />
+          <div className="flex-1 bg-neon/30" />
+          <div className="flex-1 bg-neon/10" />
         </div>
       </header>
 
