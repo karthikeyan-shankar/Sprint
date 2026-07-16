@@ -70,15 +70,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sprint — Where College Sports Begin" },
+      { title: "Campus Sprint — College Events & Hackathon Platform" },
       {
         name: "description",
         content:
-          "Sprint is the all-in-one platform for inter-college sports tournaments. Discover, register, and manage fixtures, teams, and results in one place.",
+          "Campus Sprint is the ultimate platform for discovering, registering, and managing college symposiums, hackathons, and technical events.",
       },
       { name: "theme-color", content: "#D4FF3A" },
-      { property: "og:title", content: "Sprint — Where College Sports Begin" },
-      { property: "og:description", content: "One arena for every college tournament — fixtures, teams, live scores." },
+      { property: "og:title", content: "Campus Sprint — College Events & Hackathons" },
+      { property: "og:description", content: "Discover and register for the best college events, hackathons, and symposiums." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
