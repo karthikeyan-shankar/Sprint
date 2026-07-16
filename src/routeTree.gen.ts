@@ -19,6 +19,7 @@ import { Route as CollegesRouteImport } from './routes/colleges'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as OrgOrgIdRouteImport } from './routes/org.$orgId'
 import { Route as EventsIdRouteImport } from './routes/events.$id'
 import { Route as CollegesIdRouteImport } from './routes/colleges.$id'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
@@ -82,6 +83,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
+} as any)
+const OrgOrgIdRoute = OrgOrgIdRouteImport.update({
+  id: '/org/$orgId',
+  path: '/org/$orgId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const EventsIdRoute = EventsIdRouteImport.update({
   id: '/events/$id',
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AppSettingsRoute
   '/colleges/$id': typeof CollegesIdRoute
   '/events/$id': typeof EventsIdRoute
+  '/org/$orgId': typeof OrgOrgIdRoute
   '/app/': typeof AppIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/events/$id': typeof AppEventsIdRoute
@@ -196,6 +203,7 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AppSettingsRoute
   '/colleges/$id': typeof CollegesIdRoute
   '/events/$id': typeof EventsIdRoute
+  '/org/$orgId': typeof OrgOrgIdRoute
   '/app': typeof AppIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/events/$id': typeof AppEventsIdRoute
@@ -222,6 +230,7 @@ export interface FileRoutesById {
   '/app/settings': typeof AppSettingsRoute
   '/colleges/$id': typeof CollegesIdRoute
   '/events/$id': typeof EventsIdRoute
+  '/org/$orgId': typeof OrgOrgIdRoute
   '/app/': typeof AppIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/events/$id': typeof AppEventsIdRoute
@@ -249,6 +258,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/colleges/$id'
     | '/events/$id'
+    | '/org/$orgId'
     | '/app/'
     | '/.mcp/invoke-tool/$tool'
     | '/app/events/$id'
@@ -273,6 +283,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/colleges/$id'
     | '/events/$id'
+    | '/org/$orgId'
     | '/app'
     | '/.mcp/invoke-tool/$tool'
     | '/app/events/$id'
@@ -298,6 +309,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/colleges/$id'
     | '/events/$id'
+    | '/org/$orgId'
     | '/app/'
     | '/.mcp/invoke-tool/$tool'
     | '/app/events/$id'
@@ -317,6 +329,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   EventsIdRoute: typeof EventsIdRoute
+  OrgOrgIdRoute: typeof OrgOrgIdRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   EventsIdRegisterRoute: typeof EventsIdRegisterRoute
 }
@@ -392,6 +405,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/org/$orgId': {
+      id: '/org/$orgId'
+      path: '/org/$orgId'
+      fullPath: '/org/$orgId'
+      preLoaderRoute: typeof OrgOrgIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/events/$id': {
       id: '/events/$id'
@@ -537,19 +557,10 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   EventsIdRoute: EventsIdRoute,
+  OrgOrgIdRoute: OrgOrgIdRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   EventsIdRegisterRoute: EventsIdRegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

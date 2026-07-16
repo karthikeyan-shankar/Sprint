@@ -166,6 +166,15 @@ export async function listMyEvents(organizerId: string) {
   });
 }
 
+export async function listPublishedEventsByOrganizer(organizerId: string, max = 60) {
+  const rows = await runQuery([
+    where("organizerId", "==", organizerId),
+    where("status", "==", "published"),
+    fbLimit(max)
+  ]);
+  return rows.sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+}
+
 export async function updateEvent(id: string, patch: Partial<NewEventInput>) {
   await updateDoc(doc(getDb(), COL, id), stripUndefined({ ...patch, updatedAt: serverTimestamp() }));
 }
