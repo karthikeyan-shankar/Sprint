@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { AppPageHeader, AppPanel } from "./app";
 import { useAuth } from "@/lib/auth";
@@ -11,6 +11,13 @@ export const Route = createFileRoute("/app/profile")({
 function Profile() {
   const { user, updateProfile } = useAuth();
   const [form, setForm] = useState(user);
+  
+  useEffect(() => {
+    if (user && !form) {
+      setForm(user);
+    }
+  }, [user, form]);
+
   if (!user || !form) return null;
 
   const save = (ev: React.FormEvent) => {

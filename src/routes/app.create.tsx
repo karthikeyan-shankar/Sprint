@@ -273,8 +273,8 @@ function CreateEvent() {
               <Field label="Title" required>
                 <input name="title" required className={inputCls} placeholder={`e.g. ${cat.label} 2026 — Flagship`} />
               </Field>
-              <Field label="Description" required>
-                <textarea name="description" required rows={5} className={inputCls} placeholder="What's happening? Who's it for? What will attendees do?" />
+              <Field label="Description">
+                <textarea name="description" rows={5} className={inputCls} placeholder="What's happening? Who's it for? What will attendees do?" />
               </Field>
               <Field label="Category" required>
                 <select name="category" required className={inputCls} value={category!} onChange={(e) => setCategory(e.target.value as CategoryKey)}>
@@ -335,14 +335,14 @@ function CreateEvent() {
 
           <AppPanel title="Where & when">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Venue" required><input name="venue" required className={inputCls} placeholder="e.g. Vivekananda Auditorium" /></Field>
-              <Field label="City" required><input name="city" required className={inputCls} placeholder="e.g. Chennai" /></Field>
-              <Field label="District" required><input name="district" required className={inputCls} placeholder="e.g. Chennai" /></Field>
-              <Field label="Max participants" required><input name="maxParticipants" required type="number" min={1} className={inputCls} placeholder="e.g. 500" /></Field>
+              <Field label="Venue"><input name="venue" className={inputCls} placeholder="e.g. Vivekananda Auditorium" /></Field>
+              <Field label="City"><input name="city" className={inputCls} placeholder="e.g. Chennai" /></Field>
+              <Field label="District"><input name="district" className={inputCls} placeholder="e.g. Chennai" /></Field>
+              <Field label="Max participants"><input name="maxParticipants" type="number" min={1} className={inputCls} placeholder="e.g. 500" /></Field>
               <Field label="Event date" required><input name="date" required type="date" className={inputCls} /></Field>
-              <Field label="Time" required><input name="time" required type="time" className={inputCls} /></Field>
-              <Field label="Registration deadline" required><input name="registrationDeadline" required type="date" className={inputCls} /></Field>
-              <Field label="Entry fee (₹)" required><input name="fee" required type="number" min={0} className={inputCls} placeholder="0 for free" /></Field>
+              <Field label="Time"><input name="time" type="time" className={inputCls} /></Field>
+              <Field label="Registration deadline"><input name="registrationDeadline" type="date" className={inputCls} /></Field>
+              <Field label="Entry fee (₹)"><input name="fee" type="number" min={0} className={inputCls} placeholder="0 for free" /></Field>
             </div>
           </AppPanel>
 
@@ -395,8 +395,8 @@ function CreateEvent() {
 
           <AppPanel title="Contact">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Contact phone" required><input name="contactPhone" required className={inputCls} placeholder="+91 …" /></Field>
-              <Field label="Contact email" required><input name="contactEmail" required type="email" className={inputCls} placeholder="you@college.edu" /></Field>
+              <Field label="Contact phone"><input name="contactPhone" className={inputCls} placeholder="+91 …" /></Field>
+              <Field label="Contact email"><input name="contactEmail" type="email" className={inputCls} placeholder="you@college.edu" /></Field>
             </div>
           </AppPanel>
 
