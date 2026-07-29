@@ -141,7 +141,7 @@ function OrgPage() {
           {departments.map(([deptName, deptEvents]) => (
             <Link
               key={deptName}
-              to="/org_/$orgId/dept/$deptName"
+              to="/org/$orgId/dept/$deptName"
               params={{ orgId, deptName: encodeURIComponent(deptName) }}
               className="group relative overflow-hidden rounded-3xl border border-border bg-card p-8 transition-all hover:-translate-y-1 hover:border-neon hover:shadow-[0_0_30px_rgba(212,255,58,0.1)]"
             >
