@@ -16,16 +16,30 @@ function OrgPage() {
   const [showQr, setShowQr] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
     listPublishedEventsByOrganizer(orgId)
-      .then(setEvents)
-      .finally(() => setLoading(false));
+      .then((res) => {
+        if (mounted) setEvents(Array.isArray(res) ? res : []);
+      })
+      .catch((err) => {
+        console.error("Failed to load events", err);
+        if (mounted) setEvents([]);
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
   }, [orgId]);
 
   // Group events by department
   const departments = useMemo(() => {
     const deptMap: Record<string, EventDoc[]> = {};
     for (const evt of events) {
-      const dept = evt.department?.trim() || "General";
+      if (!evt) continue;
+      const rawDept = typeof evt.department === "string" ? evt.department.trim() : "";
+      const dept = rawDept || "General";
       if (!deptMap[dept]) deptMap[dept] = [];
       deptMap[dept].push(evt);
     }
@@ -38,8 +52,6 @@ function OrgPage() {
     return sorted;
   }, [events]);
 
-
-
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -48,7 +60,7 @@ function OrgPage() {
     );
   }
 
-  if (events.length === 0) {
+  if (!events || events.length === 0) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background text-center">
         <div>
@@ -59,9 +71,10 @@ function OrgPage() {
     );
   }
 
-  // Derive organizer info from their first event
-  const orgName = events[0].organizerName || events[0].hostName || "Organizer";
-  const collegeName = events[0].collegeName || "";
+  // Derive organizer info safely from first event
+  const firstEvt = events[0] || {};
+  const orgName = firstEvt.organizerName || firstEvt.hostName || "Organizer";
+  const collegeName = firstEvt.collegeName || "";
   const displayName = collegeName || orgName;
   const pageUrl = typeof window !== "undefined" ? window.location.href : "";
 

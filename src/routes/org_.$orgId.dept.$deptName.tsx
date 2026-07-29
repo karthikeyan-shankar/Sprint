@@ -16,14 +16,29 @@ function DeptPage() {
   const [showQr, setShowQr] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
     listPublishedEventsByOrganizer(orgId)
       .then((all) => {
-        const filtered = all.filter(
-          (e) => (e.department?.trim() || "General") === dept
-        );
+        if (!mounted) return;
+        const valid = Array.isArray(all) ? all : [];
+        const filtered = valid.filter((e) => {
+          if (!e) return false;
+          const rawDept = typeof e.department === "string" ? e.department.trim() : "";
+          const d = rawDept || "General";
+          return d === dept;
+        });
         setEvents(filtered);
       })
-      .finally(() => setLoading(false));
+      .catch((err) => {
+        console.error("Failed to load department events", err);
+        if (mounted) setEvents([]);
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
   }, [orgId, dept]);
 
   if (loading) {
