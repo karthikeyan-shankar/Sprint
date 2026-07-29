@@ -6,12 +6,17 @@ import { AppPageHeader, AppPanel } from "./app";
 import { CATEGORIES, CATEGORY_MAP, COLLEGES, type CategoryKey } from "@/lib/mock-data";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import { createEvent, type NewEventInput, type EventStatus, type CustomField, type PaymentMode, type ApprovalMode } from "@/lib/events";
+import { createEvent, updateEvent, getEvent, type NewEventInput, type EventDoc, type EventStatus, type CustomField, type PaymentMode, type ApprovalMode } from "@/lib/events";
 import { CustomFieldsBuilder } from "@/components/host/CustomFieldsBuilder";
 import { uploadImage } from "@/lib/firebase";
 
 
+type CreateSearch = { edit?: string }
+
 export const Route = createFileRoute("/app/create")({
+  validateSearch: (search: Record<string, unknown>): CreateSearch => {
+    return { edit: search.edit as string | undefined }
+  },
   component: CreateEvent,
 });
 
@@ -79,7 +84,9 @@ function fieldsFor(cat: CategoryKey) {
 function CreateEvent() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { edit } = Route.useSearch();
 
+  const [existingEvent, setExistingEvent] = useState<EventDoc | null>(null);
   const [step, setStep] = useState<1 | 2>(1);
   const [category, setCategory] = useState<CategoryKey | null>(null);
   const [hostType, setHostType] = useState<HostType>("College");
@@ -91,14 +98,47 @@ function CreateEvent() {
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("free");
   const [upiQrFile, setUpiQrFile] = useState<File | null>(null);
   const [upiQrPreview, setUpiQrPreview] = useState<string | null>(null);
+  const [loadingEdit, setLoadingEdit] = useState(!!edit);
+
+  useEffect(() => {
+    if (edit && user) {
+      getEvent(edit).then((evt) => {
+        if (evt && evt.organizerId === user.id) {
+          setExistingEvent(evt);
+          setCategory(evt.category);
+          setStep(2);
+          setHostType((evt.hostType as HostType) || "College");
+          setCustomFields(evt.customFields || []);
+          setPaymentMode(evt.paymentMode || "free");
+          setPoster(evt.poster || null);
+          setUpiQrPreview(evt.upiQrUrl || null);
+          setGallery(evt.gallery || []);
+        } else {
+          toast.error("Event not found or permission denied");
+          navigate({ to: "/app/my-events" });
+        }
+      }).catch(err => {
+        console.error(err);
+        toast.error("Failed to load event for editing");
+      }).finally(() => {
+        setLoadingEdit(false);
+      });
+    } else {
+      setLoadingEdit(false);
+    }
+  }, [edit, user, navigate]);
 
 
   const extra = useMemo(() => (category ? fieldsFor(category) : null), [category]);
 
-  if (!user) return null;
+  if (!user || loadingEdit) return (
+    <div className="flex min-h-[50vh] items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-neon" />
+    </div>
+  );
 
   const pick = (k: CategoryKey) => { setCategory(k); setStep(2); };
-  const back = () => { setStep(1); setCategory(null); };
+  const back = () => { if (edit) { navigate({ to: "/app/my-events" }); } else { setStep(1); setCategory(null); } };
 
   const buildPayload = (form: HTMLFormElement, status: EventStatus): NewEventInput => {
     const fd = new FormData(form);
@@ -174,8 +214,14 @@ function CreateEvent() {
         payload.poster = await uploadImage(posterFile, 'posters');
       }
 
-      const id = await createEvent(payload);
-      toast.success(status === "published" ? "Event published!" : "Draft saved");
+      let id = edit || "";
+      if (edit) {
+        await updateEvent(edit, payload);
+        toast.success(status === "published" ? "Changes published!" : "Draft updated");
+      } else {
+        id = await createEvent(payload);
+        toast.success(status === "published" ? "Event published!" : "Draft saved");
+      }
       navigate({ to: "/app/events/$id", params: { id } });
     } catch (err: any) {
       console.error(err);
@@ -271,10 +317,10 @@ function CreateEvent() {
           <AppPanel title="Basics">
             <div className="space-y-4">
               <Field label="Title" required>
-                <input name="title" required className={inputCls} placeholder={`e.g. ${cat.label} 2026 — Flagship`} />
+                <input name="title" required className={inputCls} placeholder={`e.g. ${cat.label} 2026 — Flagship`} defaultValue={existingEvent?.title} />
               </Field>
               <Field label="Description">
-                <textarea name="description" rows={5} className={inputCls} placeholder="What's happening? Who's it for? What will attendees do?" />
+                <textarea name="description" rows={5} className={inputCls} placeholder="What's happening? Who's it for? What will attendees do?" defaultValue={existingEvent?.description} />
               </Field>
               <Field label="Category" required>
                 <select name="category" required className={inputCls} value={category!} onChange={(e) => setCategory(e.target.value as CategoryKey)}>
@@ -308,7 +354,7 @@ function CreateEvent() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label={`${hostType} name`} required>
-                <input name="hostName" required className={inputCls} placeholder={hostType === "College" ? "Select from your college" : `e.g. ${hostType} — Chapter Name`} />
+                <input name="hostName" required className={inputCls} placeholder={hostType === "College" ? "Select from your college" : `e.g. ${hostType} — Chapter Name`} defaultValue={existingEvent?.hostName} />
               </Field>
               <Field label="Affiliated college" required>
                 <input
@@ -317,7 +363,7 @@ function CreateEvent() {
                   className={inputCls}
                   list="sprint-college-suggestions"
                   placeholder="Type your college name"
-                  defaultValue={COLLEGES.find((c) => c.id === user.collegeId)?.name ?? ""}
+                  defaultValue={existingEvent?.collegeName || (COLLEGES.find((c) => c.id === user.collegeId)?.name ?? "")}
                 />
                 <datalist id="sprint-college-suggestions">
                   {COLLEGES.map((c) => <option key={c.id} value={c.name} />)}
@@ -325,24 +371,24 @@ function CreateEvent() {
               </Field>
 
               {hostType === "Department" || hostType === "Club" ? (
-                <Field label="Department"><input name="department" className={inputCls} placeholder="e.g. Computer Science" /></Field>
+                <Field label="Department"><input name="department" className={inputCls} placeholder="e.g. Computer Science" defaultValue={existingEvent?.department} /></Field>
               ) : null}
               <Field label="Organizer contact person" required>
-                <input name="contactPerson" required className={inputCls} defaultValue={user.name} />
+                <input name="contactPerson" required className={inputCls} defaultValue={existingEvent?.contactPerson || user.name} />
               </Field>
             </div>
           </AppPanel>
 
           <AppPanel title="Where & when">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Venue"><input name="venue" className={inputCls} placeholder="e.g. Vivekananda Auditorium" /></Field>
-              <Field label="City"><input name="city" className={inputCls} placeholder="e.g. Chennai" /></Field>
-              <Field label="District"><input name="district" className={inputCls} placeholder="e.g. Chennai" /></Field>
-              <Field label="Max participants"><input name="maxParticipants" type="number" min={1} className={inputCls} placeholder="e.g. 500" /></Field>
-              <Field label="Event date" required><input name="date" required type="date" className={inputCls} /></Field>
-              <Field label="Time"><input name="time" type="time" className={inputCls} /></Field>
-              <Field label="Registration deadline"><input name="registrationDeadline" type="date" className={inputCls} /></Field>
-              <Field label="Entry fee (₹)"><input name="fee" type="number" min={0} className={inputCls} placeholder="0 for free" /></Field>
+              <Field label="Venue"><input name="venue" className={inputCls} placeholder="e.g. Vivekananda Auditorium" defaultValue={existingEvent?.venue} /></Field>
+              <Field label="City"><input name="city" className={inputCls} placeholder="e.g. Chennai" defaultValue={existingEvent?.city} /></Field>
+              <Field label="District"><input name="district" className={inputCls} placeholder="e.g. Chennai" defaultValue={existingEvent?.district} /></Field>
+              <Field label="Max participants"><input name="maxParticipants" type="number" min={1} className={inputCls} placeholder="e.g. 500" defaultValue={existingEvent?.maxParticipants} /></Field>
+              <Field label="Event date" required><input name="date" required type="date" className={inputCls} defaultValue={existingEvent?.date} /></Field>
+              <Field label="Time"><input name="time" type="time" className={inputCls} defaultValue={existingEvent?.time} /></Field>
+              <Field label="Registration deadline"><input name="registrationDeadline" type="date" className={inputCls} defaultValue={existingEvent?.registrationDeadline} /></Field>
+              <Field label="Entry fee (₹)"><input name="fee" type="number" min={0} className={inputCls} placeholder="0 for free" defaultValue={existingEvent?.fee} /></Field>
             </div>
           </AppPanel>
 
@@ -351,41 +397,41 @@ function CreateEvent() {
               <div className="grid gap-4 sm:grid-cols-2">
                 {extra.team && (
                   <>
-                    <Field label="Team size (min)"><input name="teamMin" type="number" min={1} className={inputCls} placeholder="1" /></Field>
-                    <Field label="Team size (max)"><input name="teamMax" type="number" min={1} className={inputCls} placeholder="4" /></Field>
+                    <Field label="Team size (min)"><input name="teamMin" type="number" min={1} className={inputCls} placeholder="1" defaultValue={existingEvent?.teamMin} /></Field>
+                    <Field label="Team size (max)"><input name="teamMax" type="number" min={1} className={inputCls} placeholder="4" defaultValue={existingEvent?.teamMax} /></Field>
                   </>
                 )}
                 {extra.format && (
                   <Field label="Format">
-                    <input name="format" className={inputCls} placeholder="e.g. Knockout · Best of 3 · Swiss" />
+                    <input name="format" className={inputCls} placeholder="e.g. Knockout · Best of 3 · Swiss" defaultValue={existingEvent?.format} />
                   </Field>
                 )}
                 {extra.tracks && (
                   <Field label="Tracks / themes">
-                    <input name="tracks" className={inputCls} placeholder="AI · FinTech · HealthTech · Open Innovation" />
+                    <input name="tracks" className={inputCls} placeholder="AI · FinTech · HealthTech · Open Innovation" defaultValue={existingEvent?.tracks} />
                   </Field>
                 )}
                 {extra.prize && (
                   <Field label="Prize pool (₹)">
-                    <input name="prize" type="number" min={0} className={inputCls} placeholder="e.g. 100000" />
+                    <input name="prize" type="number" min={0} className={inputCls} placeholder="e.g. 100000" defaultValue={existingEvent?.prize} />
                   </Field>
                 )}
                 {extra.level && (
                   <Field label="Level">
-                    <select name="level" className={inputCls} defaultValue="All levels">
+                    <select name="level" className={inputCls} defaultValue={existingEvent?.level || "All levels"}>
                       <option>All levels</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option>
                     </select>
                   </Field>
                 )}
                 {extra.kit && (
                   <Field label="Kit / materials provided">
-                    <input name="kit" className={inputCls} placeholder="e.g. Arduino kit, sensors" />
+                    <input name="kit" className={inputCls} placeholder="e.g. Arduino kit, sensors" defaultValue={existingEvent?.kit} />
                   </Field>
                 )}
                 {extra.prerequisites && (
                   <div className="sm:col-span-2">
                     <Field label="Prerequisites">
-                      <textarea name="prerequisites" rows={3} className={inputCls} placeholder="What should attendees know or bring?" />
+                      <textarea name="prerequisites" rows={3} className={inputCls} placeholder="What should attendees know or bring?" defaultValue={existingEvent?.prerequisites} />
                     </Field>
                   </div>
                 )}
@@ -395,13 +441,13 @@ function CreateEvent() {
 
           <AppPanel title="Contact">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Contact phone"><input name="contactPhone" className={inputCls} placeholder="+91 …" /></Field>
-              <Field label="Contact email"><input name="contactEmail" type="email" className={inputCls} placeholder="you@college.edu" /></Field>
+              <Field label="Contact phone"><input name="contactPhone" className={inputCls} placeholder="+91 …" defaultValue={existingEvent?.contactPhone} /></Field>
+              <Field label="Contact email"><input name="contactEmail" type="email" className={inputCls} placeholder="you@college.edu" defaultValue={existingEvent?.contactEmail} /></Field>
             </div>
           </AppPanel>
 
           <AppPanel title="Rules">
-            <textarea name="rules" rows={5} className={inputCls} placeholder={"One rule per line.\nRegistration closes 24 hours before the event.\nCollege ID mandatory."} />
+            <textarea name="rules" rows={5} className={inputCls} placeholder={"One rule per line.\nRegistration closes 24 hours before the event.\nCollege ID mandatory."} defaultValue={existingEvent?.rules?.join('\n')} />
           </AppPanel>
 
           <AppPanel title="Registration setup">

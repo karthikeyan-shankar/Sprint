@@ -5,7 +5,7 @@ import { AppPageHeader } from "./app";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { EmptyState } from "@/components/site/EmptyState";
-import { listMyEvents, listRegistrationsForUser, listRegistrationsForEvent, getEventsByIds, type EventDoc, type RegistrationDoc } from "@/lib/events";
+import { listMyEvents, listRegistrationsForUser, listRegistrationsForEvent, getEventsByIds, deleteEvent, type EventDoc, type RegistrationDoc } from "@/lib/events";
 import { CATEGORY_MAP } from "@/lib/mock-data";
 import { toast } from "sonner";
 
@@ -48,6 +48,16 @@ function MyEvents() {
     return () => { cancelled = true; };
   }, [user]);
 
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteEvent(id);
+      setEvents((prev) => prev?.filter((e) => e.id !== id) ?? null);
+      toast.success("Event deleted successfully");
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Could not delete event", { description: err?.message });
+    }
+  };
 
   if (!user) return null;
 
@@ -119,14 +129,14 @@ function MyEvents() {
         />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {visible.map((e) => <MyEventCard key={e.id} e={e} regs={tab === "hosted" || tab === "drafts" ? (regsByEvent[e.id] ?? []) : undefined} />)}
+          {visible.map((e) => <MyEventCard key={e.id} e={e} regs={tab === "hosted" || tab === "drafts" ? (regsByEvent[e.id] ?? []) : undefined} onDelete={handleDelete} />)}
         </div>
       )}
     </div>
   );
 }
 
-function MyEventCard({ e, regs }: { e: EventDoc; regs?: RegistrationDoc[] }) {
+function MyEventCard({ e, regs, onDelete }: { e: EventDoc; regs?: RegistrationDoc[]; onDelete?: (id: string) => void }) {
   const cat = CATEGORY_MAP[e.category];
   const Icon = cat?.icon;
   const fill = e.maxParticipants ? Math.round((e.participants / e.maxParticipants) * 100) : 0;
@@ -200,9 +210,25 @@ function MyEventCard({ e, regs }: { e: EventDoc; regs?: RegistrationDoc[] }) {
             </div>
           )}
           {isHost && (
-            <Link to="/app/events/$id" params={{ id: e.id }} className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-neon px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-neon-foreground">
-              <Settings2 className="h-3.5 w-3.5" /> Manage
-            </Link>
+            <div className="mt-2 flex w-full gap-2">
+              <Link to="/app/events/$id" params={{ id: e.id }} className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-neon px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-neon-foreground">
+                <Settings2 className="h-3.5 w-3.5" /> Manage
+              </Link>
+              <Link to="/app/create" search={{ edit: e.id }} className="inline-flex items-center justify-center rounded-full bg-surface-2 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground hover:bg-surface-3 hover:text-foreground">
+                Edit
+              </Link>
+              <button 
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  if (confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
+                    onDelete?.(e.id);
+                  }
+                }}
+                className="inline-flex items-center justify-center rounded-full bg-surface-2 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground hover:bg-red-500/20 hover:text-red-500 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
           )}
         </div>
       </div>
