@@ -167,12 +167,28 @@ export async function listMyEvents(organizerId: string) {
 }
 
 export async function listPublishedEventsByOrganizer(organizerId: string, max = 60) {
-  const rows = await runQuery([
-    where("organizerId", "==", organizerId),
-    where("status", "==", "published"),
-    fbLimit(max)
-  ]);
-  return rows.sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+  try {
+    const rows = await runQuery([
+      where("organizerId", "==", organizerId),
+      where("status", "==", "published"),
+      fbLimit(max)
+    ]);
+    return rows.sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+  } catch (err) {
+    console.warn("listPublishedEventsByOrganizer compound query failed, trying single condition fallback", err);
+    try {
+      const rows = await runQuery([
+        where("organizerId", "==", organizerId),
+        fbLimit(max)
+      ]);
+      return rows
+        .filter((r) => r.status === "published")
+        .sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+    } catch (e) {
+      console.error("listPublishedEventsByOrganizer fallback also failed", e);
+      return [];
+    }
+  }
 }
 
 export async function updateEvent(id: string, patch: Partial<NewEventInput>) {

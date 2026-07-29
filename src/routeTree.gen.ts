@@ -33,6 +33,7 @@ import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]
 import { Route as EventsIdRegisterRouteImport } from './routes/events_.$id.register'
 import { Route as AppEventsIdRouteImport } from './routes/app.events.$id'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as OrgOrgIdDeptDeptNameRouteImport } from './routes/org_.$orgId.dept.$deptName'
 
 const WhyRoute = WhyRouteImport.update({
   id: '/why',
@@ -157,6 +158,11 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const OrgOrgIdDeptDeptNameRoute = OrgOrgIdDeptDeptNameRouteImport.update({
+  id: '/org_/$orgId/dept/$deptName',
+  path: '/org/$orgId/dept/$deptName',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/events/$id': typeof AppEventsIdRoute
   '/events/$id/register': typeof EventsIdRegisterRoute
+  '/org/$orgId/dept/$deptName': typeof OrgOrgIdDeptDeptNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -208,6 +215,7 @@ export interface FileRoutesByTo {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/events/$id': typeof AppEventsIdRoute
   '/events/$id/register': typeof EventsIdRegisterRoute
+  '/org/$orgId/dept/$deptName': typeof OrgOrgIdDeptDeptNameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -235,6 +243,7 @@ export interface FileRoutesById {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/events/$id': typeof AppEventsIdRoute
   '/events_/$id/register': typeof EventsIdRegisterRoute
+  '/org_/$orgId/dept/$deptName': typeof OrgOrgIdDeptDeptNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -263,6 +272,7 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/app/events/$id'
     | '/events/$id/register'
+    | '/org/$orgId/dept/$deptName'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -288,6 +298,7 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/app/events/$id'
     | '/events/$id/register'
+    | '/org/$orgId/dept/$deptName'
   id:
     | '__root__'
     | '/'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/app/events/$id'
     | '/events_/$id/register'
+    | '/org_/$orgId/dept/$deptName'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -332,6 +344,7 @@ export interface RootRouteChildren {
   OrgOrgIdRoute: typeof OrgOrgIdRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   EventsIdRegisterRoute: typeof EventsIdRegisterRoute
+  OrgOrgIdDeptDeptNameRoute: typeof OrgOrgIdDeptDeptNameRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -504,6 +517,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/org_/$orgId/dept/$deptName': {
+      id: '/org_/$orgId/dept/$deptName'
+      path: '/org/$orgId/dept/$deptName'
+      fullPath: '/org/$orgId/dept/$deptName'
+      preLoaderRoute: typeof OrgOrgIdDeptDeptNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -560,6 +580,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrgOrgIdRoute: OrgOrgIdRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   EventsIdRegisterRoute: EventsIdRegisterRoute,
+  OrgOrgIdDeptDeptNameRoute: OrgOrgIdDeptDeptNameRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

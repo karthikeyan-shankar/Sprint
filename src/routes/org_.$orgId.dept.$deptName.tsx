@@ -35,7 +35,7 @@ function DeptPage() {
   }
 
   const collegeName = events[0]?.collegeName || "";
-  const pageUrl = window.location.href;
+  const pageUrl = typeof window !== "undefined" ? window.location.href : "";
 
   return (
     <div className="min-h-screen bg-background text-foreground">

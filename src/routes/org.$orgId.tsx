@@ -63,7 +63,7 @@ function OrgPage() {
   const orgName = events[0].organizerName || events[0].hostName || "Organizer";
   const collegeName = events[0].collegeName || "";
   const displayName = collegeName || orgName;
-  const pageUrl = window.location.href;
+  const pageUrl = typeof window !== "undefined" ? window.location.href : "";
 
   return (
     <div className="min-h-screen bg-background text-foreground">
