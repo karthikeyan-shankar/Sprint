@@ -49,7 +49,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="mt-2 text-sm text-muted-foreground">
           Something went sideways. Try again or head home.
           <br />
-          <span className="text-red-500 font-mono text-xs text-left block mt-4 overflow-auto max-h-40">{error.message}</span>
+          <span className="text-red-500 font-mono text-xs text-left block mt-4 overflow-auto max-h-40">{error?.message || String(error)}</span>
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
