@@ -48,6 +48,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <h1 className="font-display text-4xl uppercase">Match paused</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Something went sideways. Try again or head home.
+          <br />
+          <span className="text-red-500 font-mono text-xs text-left block mt-4 overflow-auto max-h-40">{error.message}</span>
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button

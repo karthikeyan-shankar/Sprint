@@ -10,7 +10,12 @@ export const Route = createFileRoute("/org_/$orgId/dept/$deptName")({
 
 function DeptPage() {
   const { orgId, deptName } = Route.useParams();
-  const dept = decodeURIComponent(deptName);
+  let dept = deptName;
+  try {
+    dept = decodeURIComponent(deptName);
+  } catch (e) {
+    console.error("Failed to decode deptName", e);
+  }
   const [events, setEvents] = useState<EventDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [showQr, setShowQr] = useState(false);
