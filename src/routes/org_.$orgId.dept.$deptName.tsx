@@ -109,10 +109,7 @@ function DeptPage() {
               <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Events</div>
               <div className="mt-1 font-display text-3xl text-neon">{events.length}</div>
             </div>
-            <div className="rounded-2xl border border-border bg-surface/30 px-6 py-4 backdrop-blur">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Total Registrations</div>
-              <div className="mt-1 font-display text-3xl text-neon">{events.reduce((s, e) => s + (e.participants || 0), 0)}</div>
-            </div>
+
             <button
               onClick={() => setShowQr(true)}
               className="group relative bg-neon px-8 py-4 font-display text-xl uppercase text-neon-foreground transition-all hover:brightness-110"
