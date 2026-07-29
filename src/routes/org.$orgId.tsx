@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { listPublishedEventsByOrganizer, type EventDoc } from "@/lib/events";
-import { Loader2, MapPin, Calendar, QrCode, X, Share } from "lucide-react";
+import { Loader2, MapPin, Calendar, X, Share, Building2, ChevronRight } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/org/$orgId")({
   component: OrgPage,
@@ -13,12 +14,34 @@ function OrgPage() {
   const [events, setEvents] = useState<EventDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [showQr, setShowQr] = useState(false);
+  const [activeDept, setActiveDept] = useState<string | null>(null);
 
   useEffect(() => {
     listPublishedEventsByOrganizer(orgId)
       .then(setEvents)
       .finally(() => setLoading(false));
   }, [orgId]);
+
+  // Group events by department
+  const departments = useMemo(() => {
+    const deptMap: Record<string, EventDoc[]> = {};
+    for (const evt of events) {
+      const dept = evt.department?.trim() || "General";
+      if (!deptMap[dept]) deptMap[dept] = [];
+      deptMap[dept].push(evt);
+    }
+    // Sort departments alphabetically, but keep "General" at the end
+    const sorted = Object.entries(deptMap).sort(([a], [b]) => {
+      if (a === "General") return 1;
+      if (b === "General") return -1;
+      return a.localeCompare(b);
+    });
+    return sorted;
+  }, [events]);
+
+  const filteredDepts = activeDept
+    ? departments.filter(([name]) => name === activeDept)
+    : departments;
 
   if (loading) {
     return (
@@ -47,7 +70,6 @@ function OrgPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Exclusive Header */}
       {/* Exclusive Header - Brutalist Design */}
       <header className="relative overflow-hidden bg-ink px-4 py-16 sm:px-8 sm:py-20 lg:py-24">
         {/* Background giant text */}
@@ -83,7 +105,16 @@ function OrgPage() {
             </p>
           </div>
 
-          <div className="mt-12 flex flex-wrap gap-4">
+          {/* Stats */}
+          <div className="mt-12 flex flex-wrap gap-6">
+            <div className="rounded-2xl border border-border bg-surface/30 px-6 py-4 backdrop-blur">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Departments</div>
+              <div className="mt-1 font-display text-3xl text-neon">{departments.length}</div>
+            </div>
+            <div className="rounded-2xl border border-border bg-surface/30 px-6 py-4 backdrop-blur">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Events</div>
+              <div className="mt-1 font-display text-3xl text-neon">{events.length}</div>
+            </div>
             <button
               onClick={() => setShowQr(true)}
               className="group relative bg-neon px-10 py-5 font-display text-2xl uppercase text-neon-foreground transition-all hover:brightness-110"
@@ -104,46 +135,110 @@ function OrgPage() {
         </div>
       </header>
 
-      {/* Events Grid */}
-      <main className="mx-auto max-w-6xl px-6 py-16">
-        <h2 className="mb-8 font-display text-3xl uppercase">Upcoming Events</h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {events.map((evt) => (
-            <Link
-              key={evt.id}
-              to="/events/$id"
-              params={{ id: evt.id }}
-              className="group relative overflow-hidden rounded-3xl border border-border bg-surface/50 p-1 transition-all hover:border-neon/50 hover:bg-surface"
+      {/* Department Filter Tabs */}
+      <div className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
+        <div className="mx-auto max-w-6xl overflow-x-auto px-6 py-3">
+          <div className="flex items-center gap-2">
+            <Building2 className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <button
+              onClick={() => setActiveDept(null)}
+              className={cn(
+                "shrink-0 rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-widest transition",
+                activeDept === null
+                  ? "border-neon bg-neon text-neon-foreground"
+                  : "border-border bg-surface-2 text-muted-foreground hover:text-foreground hover:border-foreground"
+              )}
             >
-              <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface-2">
-                {evt.poster ? (
-                  <img
-                    src={evt.poster}
-                    alt={evt.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center p-6 text-center">
-                    <span className="font-display text-2xl uppercase opacity-20">{evt.title}</span>
-                  </div>
+              All Departments
+            </button>
+            {departments.map(([name]) => (
+              <button
+                key={name}
+                onClick={() => setActiveDept(name === activeDept ? null : name)}
+                className={cn(
+                  "shrink-0 rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-widest transition",
+                  activeDept === name
+                    ? "border-neon bg-neon text-neon-foreground"
+                    : "border-border bg-surface-2 text-muted-foreground hover:text-foreground hover:border-foreground"
                 )}
-              </div>
-              <div className="p-6">
-                <h3 className="font-display text-2xl uppercase">{evt.title}</h3>
-                <div className="mt-4 space-y-2 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-neon" />
-                    <span>{evt.date} • {evt.time}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-neon" />
-                    <span className="truncate">{evt.venue}</span>
-                  </div>
+              >
+                {name} ({departments.find(([n]) => n === name)?.[1].length})
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Events by Department */}
+      <main className="mx-auto max-w-6xl px-6 py-12">
+        {filteredDepts.map(([deptName, deptEvents]) => (
+          <section key={deptName} className="mb-16 last:mb-0">
+            {/* Department Header */}
+            <div className="mb-6 flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="grid h-10 w-10 place-items-center rounded-xl bg-neon/10 text-neon">
+                  <Building2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="font-display text-2xl uppercase sm:text-3xl">{deptName}</h2>
+                  <p className="text-xs text-muted-foreground">{deptEvents.length} event{deptEvents.length !== 1 ? "s" : ""}</p>
                 </div>
               </div>
-            </Link>
-          ))}
-        </div>
+              <div className="hidden h-px flex-1 bg-border sm:block" />
+            </div>
+
+            {/* Event Cards Grid */}
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {deptEvents.map((evt) => (
+                <Link
+                  key={evt.id}
+                  to="/events/$id"
+                  params={{ id: evt.id }}
+                  className="group relative overflow-hidden rounded-3xl border border-border bg-surface/50 p-1 transition-all hover:border-neon/50 hover:bg-surface"
+                >
+                  <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface-2">
+                    {evt.poster ? (
+                      <img
+                        src={evt.poster}
+                        alt={evt.title}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center p-6 text-center">
+                        <span className="font-display text-2xl uppercase opacity-20">{evt.title}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-6">
+                    {evt.category && (
+                      <span className="mb-2 inline-block rounded-full bg-neon/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-neon">
+                        {evt.category}
+                      </span>
+                    )}
+                    <h3 className="font-display text-2xl uppercase">{evt.title}</h3>
+                    <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+                      {evt.date && (
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-neon" />
+                          <span>{evt.date}{evt.time ? ` • ${evt.time}` : ""}</span>
+                        </div>
+                      )}
+                      {evt.venue && (
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-neon" />
+                          <span className="truncate">{evt.venue}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-4 flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-neon opacity-0 transition-opacity group-hover:opacity-100">
+                      View Details <ChevronRight className="h-3 w-3" />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ))}
       </main>
 
       {/* QR Code Modal */}
