@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { toast } from "sonner";
 import { ImagePlus, Save, ArrowLeft, Check, Loader2 } from "lucide-react";
 import { AppPageHeader, AppPanel } from "./app";
