@@ -4,7 +4,7 @@ import { listPublishedEventsByOrganizer, type EventDoc } from "@/lib/events";
 import { Loader2, MapPin, Calendar, X, Share, ArrowLeft, ChevronRight } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
-export const Route = createFileRoute("/org/$orgId/dept/$deptName")({
+export const Route = createFileRoute("/org_/$orgId/dept/$deptName")({
   component: DeptPage,
 });
 
