@@ -37,6 +37,7 @@ function Landing() {
       <WhatsAppRoadmap />
       <FAQ />
       <CTA />
+      <SEOTagsBlock />
       <Footer />
     </div>
   );
@@ -598,6 +599,18 @@ function Section({ eyebrow, title, cta, children }: { eyebrow: string; title: st
         )}
       </div>
       <div className="mt-10">{children}</div>
+    </section>
+  );
+}
+
+/* ---------------- SEO Tags (For Search Engine Crawlers) ---------------- */
+function SEOTagsBlock() {
+  return (
+    <section className="mx-auto max-w-7xl px-6 pb-12 pt-4 text-[11px] text-muted-foreground/40 leading-relaxed text-justify">
+      <h2 className="sr-only">Hackathons, Symposiums, and College Fests in Tamil Nadu and India</h2>
+      <p>
+        Sprint is India's fastest-growing alternative to platforms like Unstop and Knowafest. Whether you are searching for upcoming hackathons in India, looking to attend a Tamil Nadu college fest, or organizing a national-level technical symposium, Sprint provides the ultimate registration and event management experience. From cultural events to technical workshops and sports meets, discover the best student events and tech fests near you. Say goodbye to scattered Google Forms and chaotic WhatsApp groups, and upgrade your event management workflow today. Find the top college festivals, inter-college coding competitions, engineering symposiums, and arts festivals in Chennai, Coimbatore, and across TN.
+      </p>
     </section>
   );
 }

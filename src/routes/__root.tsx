@@ -72,13 +72,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sprint — College Events & Hackathon Platform" },
+      { title: "Sprint — College Events, Hackathons & Symposiums" },
       {
         name: "description",
         content:
-          "Sprint is the ultimate platform for discovering, registering, and managing college symposiums, hackathons, and technical events.",
+          "Discover and register for upcoming college fests, hackathons, symposiums, and tech events in India. The modern alternative to Unstop and Knowafest.",
       },
-      { name: "theme-color", content: "#D4FF3A" },
+      {
+        name: "keywords",
+        content: "hackathons, college fests, symposiums, tech events, cultural events, knowafest, unstop, tamil nadu college fest, student events India, register for hackathon"
+      },
+      { name: "theme-color", content: "#000000" },
       { property: "og:title", content: "Sprint — College Events & Hackathons" },
       { property: "og:description", content: "Discover and register for the best college events, hackathons, and symposiums." },
       { property: "og:type", content: "website" },
