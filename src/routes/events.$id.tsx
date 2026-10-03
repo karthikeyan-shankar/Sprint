@@ -171,6 +171,77 @@ function EventBody({ e }: { e: ViewEvent }) {
   const registered = !!user?.joinedEventIds.includes(e.id);
   const bookmarked = !!user?.bookmarkedEventIds.includes(e.id);
 
+  useEffect(() => {
+    document.title = `${e.title} — Sprint`;
+    const description = e.description.slice(0, 150) + (e.description.length > 150 ? "..." : "");
+    
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement("meta");
+      metaDesc.setAttribute("name", "description");
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute("content", description);
+
+    let ogImage = document.querySelector('meta[property="og:image"]');
+    if (!ogImage) {
+      ogImage = document.createElement("meta");
+      ogImage.setAttribute("property", "og:image");
+      document.head.appendChild(ogImage);
+    }
+    const cleanBanner = e.banner.replace("url(", "").replace(")", "").split(" ")[0];
+    ogImage.setAttribute("content", cleanBanner);
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      "name": e.title,
+      "startDate": e.date,
+      "endDate": e.endDate || e.date,
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "location": {
+        "@type": "Place",
+        "name": e.venue,
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": e.city,
+          "addressRegion": e.district,
+          "addressCountry": "IN"
+        }
+      },
+      "image": [cleanBanner],
+      "description": description,
+      "offers": {
+        "@type": "Offer",
+        "url": window.location.href,
+        "price": e.fee,
+        "priceCurrency": "INR",
+        "availability": "https://schema.org/InStock"
+      },
+      "organizer": {
+        "@type": "Organization",
+        "name": e.organizer,
+        "url": window.location.origin
+      }
+    };
+
+    let script = document.querySelector("#event-schema");
+    if (!script) {
+      script = document.createElement("script");
+      script.id = "event-schema";
+      script.setAttribute("type", "application/ld+json");
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(schema);
+
+    return () => {
+      document.title = "Sprint — Campus Events";
+      if (script) document.head.removeChild(script);
+      if (ogImage) document.head.removeChild(ogImage);
+    };
+  }, [e]);
+
   const handleRegister = () => {
     if (!isAuthed) { toast.info("Sign in to register for this event."); navigate({ to: "/login" }); return; }
     navigate({ to: "/events/$id/register", params: { id: e.id } });
